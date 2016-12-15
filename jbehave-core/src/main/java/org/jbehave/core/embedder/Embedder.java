@@ -232,7 +232,7 @@ public class Embedder {
         }
     }
 
-    private void handleFailures(BatchFailures failures) {
+    protected void handleFailures(BatchFailures failures) {
         if (failures.size() > 0) {
             if (embedderControls().ignoreFailureInStories()) {
                 embedderMonitor.batchFailed(failures);
@@ -418,7 +418,7 @@ public class Embedder {
      * 
      * @return An ExecutorService
      */
-    private ExecutorService createExecutorService() {
+    protected ExecutorService createExecutorService() {
         return new FixedThreadExecutors().create(embedderControls());
     }
 
@@ -443,7 +443,7 @@ public class Embedder {
         return storyManager;
     }
 
-    private StoryManager createStoryManager() {
+    protected StoryManager createStoryManager() {
         return new StoryManager(configuration(), stepsFactory(), embedderControls(), embedderMonitor(),
                 executorService(), performableTree(), timeoutParsers());
     }
