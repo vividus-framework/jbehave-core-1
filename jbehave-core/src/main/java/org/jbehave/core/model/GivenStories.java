@@ -63,7 +63,7 @@ public class GivenStories {
 
     public boolean requireParameters() {
         for (GivenStory story : stories) {
-            if (story.hasAnchor()) {
+            if (story.hasAnchorExamples() ){
                 return true;
             }
         }

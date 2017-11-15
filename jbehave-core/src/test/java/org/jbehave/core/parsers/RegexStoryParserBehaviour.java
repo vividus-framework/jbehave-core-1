@@ -149,8 +149,11 @@ class RegexStoryParserBehaviour {
                 wholeStory, storyPath);
         assertThat(story.getPath(), equalTo(storyPath));
         assertThat(story.getGivenStories().getStories().size(), equalTo(1));
-        GivenStory givenStory = story.getGivenStories().getStories().get(0);
+        GivenStories givenStories = story.getGivenStories();
+        assertThat(givenStories.requireParameters(), equalTo(false));
+        GivenStory givenStory = givenStories.getStories().get(0);
         assertThat(givenStory.hasAnchorParameters(), equalTo(true));
+        assertThat(givenStory.hasAnchorExamples(), equalTo(false));
         Map<String, String> anchorParameters = givenStory.getAnchorParameters();
         assertThat(anchorParameters.size(), equalTo(2));
         assertThat(anchorParameters.get("id1"), equalTo("scenario1"));        
