@@ -1,7 +1,6 @@
 package org.jbehave.core.configuration;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import org.jbehave.core.Embeddable;
@@ -191,6 +190,11 @@ public abstract class Configuration {
      * Paths to resources containing composite steps definitions
      */
     protected Set<String> compositePaths;
+
+    /**
+     * Enables parallelization of story level examples
+     */
+    private boolean parallelStoryExamplesEnabled;
 
     public Configuration() {
     }
@@ -483,5 +487,13 @@ public abstract class Configuration {
     public Configuration useCompositePaths(Set<String> compositePaths) {
         this.compositePaths = compositePaths;
         return this;
+    }
+
+    public boolean isParallelStoryExamplesEnabled() {
+        return parallelStoryExamplesEnabled;
+    }
+
+    public void setParallelStoryExamplesEnabled(boolean parallelStoryExamplesEnabled) {
+        this.parallelStoryExamplesEnabled = parallelStoryExamplesEnabled;
     }
 }
