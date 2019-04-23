@@ -451,6 +451,10 @@ public class ExamplesTable {
         return format();
     }
 
+    public boolean isEmpty() {
+        return headers.isEmpty();
+    }
+
     public void outputTo(PrintStream output) {
         output.print(asString());
     }
