@@ -385,7 +385,7 @@ public class PerformableTree {
         UUIDExceptionWrapper getFailure();
     }
 
-    private final static class FineSoFar implements State {
+    public final static class FineSoFar implements State {
 
         @Override
         public State run(Step step, List<StepResult> results, StoryReporter reporter) {
@@ -410,7 +410,7 @@ public class PerformableTree {
 
     }
 
-    private final static class SomethingHappened implements State {
+    public final static class SomethingHappened implements State {
         private UUIDExceptionWrapper failure;
 
         public SomethingHappened(UUIDExceptionWrapper failure) {
