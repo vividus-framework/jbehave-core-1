@@ -676,13 +676,13 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult perform(UUIDExceptionWrapper storyFailureIfItHappened) {
-            return step.perform(storyFailureIfItHappened);
+        public StepResult perform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
+            return step.perform(storyReporter, storyFailureIfItHappened);
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
-            return step.doNotPerform(storyFailureIfItHappened);
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
+            return step.doNotPerform(storyReporter, storyFailureIfItHappened);
         }
 
         @Override
@@ -706,7 +706,7 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult perform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult perform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             ParameterConverters paramConvertersWithExceptionInjector = paramConvertersWithExceptionInjector(storyFailureIfItHappened);
             MethodInvoker methodInvoker = new MethodInvoker(method, paramConvertersWithExceptionInjector, paranamer,
                     meta);
@@ -729,8 +729,8 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
-            return perform(storyFailureIfItHappened);
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
+            return perform(storyReporter, storyFailureIfItHappened);
         }
 
         private class UUIDExceptionWrapperInjector implements ParameterConverter<UUIDExceptionWrapper>
@@ -765,8 +765,8 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
-            return perform(storyFailureIfItHappened);
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
+            return perform(storyReporter, storyFailureIfItHappened);
         }
     }
 
@@ -777,7 +777,7 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             return skipped();
         }
     }
@@ -789,12 +789,12 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
-            return super.perform(storyFailureIfItHappened);
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
+            return super.perform(storyReporter, storyFailureIfItHappened);
         }
 
         @Override
-        public StepResult perform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult perform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             return skipped();
         }
     }
@@ -817,17 +817,14 @@ public class StepCreator {
             this.composedSteps = composedSteps;
         }
 
-        public void describeTo(StoryReporter storyReporter) {
-            storyReporter.beforeStep(stepAsString);
-        }
-
         @Override
         public List<Step> getComposedSteps() {
             return composedSteps;
         }
 
         @Override
-        public StepResult perform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult perform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
+            storyReporter.beforeStep(stepAsString);
             Timer timer = new Timer().start();
             try {
                 parametriseStep();
@@ -865,7 +862,7 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             try {
                 parametriseStep();
             } catch (Throwable t) {
@@ -913,12 +910,12 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult perform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult perform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             return pending(stepAsString);
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             return pending(stepAsString);
         }
 
@@ -953,12 +950,12 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult perform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult perform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             return ignorable(stepAsString);
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             return ignorable(stepAsString);
         }
         
@@ -976,12 +973,12 @@ public class StepCreator {
         }
 
         @Override
-        public StepResult perform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult perform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             return comment(stepAsString);
         }
 
         @Override
-        public StepResult doNotPerform(UUIDExceptionWrapper storyFailureIfItHappened) {
+        public StepResult doNotPerform(StoryReporter storyReporter, UUIDExceptionWrapper storyFailureIfItHappened) {
             return comment(stepAsString);
         }
 
