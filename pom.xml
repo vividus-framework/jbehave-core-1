@@ -13,6 +13,14 @@
   <description>JBehave Core provides the core functionality enabling Behaviour-Driven Development in a JVM.
   </description>
 
+  <distributionManagement>
+    <repository>
+      <id>github-vividus</id>
+      <name>GitHub VIVIDUS Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/vividus-framework/vividus</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <java.version>1.8</java.version>
     <maven.version>3.6.0</maven.version>
