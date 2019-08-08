@@ -14,6 +14,14 @@
   <description>JBehave Core provides the core functionality enabling Behaviour-Driven Development in a JVM.
   </description>
 
+  <distributionManagement>
+    <repository>
+      <id>bintray-vividus-maven-releases</id>
+      <name>vividus-maven-releases</name>
+      <url>https://api.bintray.com/maven/vividus/maven-releases/jbehave/</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <java.version>1.8</java.version>
     <maven.version>3.6.0</maven.version>
