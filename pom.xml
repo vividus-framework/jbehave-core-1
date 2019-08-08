@@ -13,6 +13,14 @@
   <description>JBehave Core provides the core functionality enabling Behaviour-Driven Development in a JVM.
   </description>
 
+  <distributionManagement>
+    <repository>
+      <id>vividus-central-releases-local</id>
+      <name>vividus-central-releases-local</name>
+      <url>https://vividuscentral.jfrog.io/artifactory/releases-local/</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <java.version>1.8</java.version>
     <maven.version>3.6.0</maven.version>
