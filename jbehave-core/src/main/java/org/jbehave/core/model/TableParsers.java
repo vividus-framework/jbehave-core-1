@@ -6,23 +6,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import com.google.common.collect.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.jbehave.core.configuration.Keywords;
 import org.jbehave.core.model.ExamplesTable.ExamplesTableData;
 import org.jbehave.core.model.ExamplesTable.ExamplesTableProperties;
+import org.jbehave.core.steps.ParameterConverters;
 
 public class TableParsers {
 
     public TableParsers(){}
 
-    public ExamplesTableData parseData(String tableAsString, Keywords keywords) {
+    public ExamplesTableData parseData(String tableAsString, Keywords keywords,
+            ParameterConverters parameterConverters) {
         return parseData(tableAsString, keywords.examplesTableHeaderSeparator(), keywords.examplesTableValueSeparator(),
-                keywords.examplesTableIgnorableSeparator());
+                keywords.examplesTableIgnorableSeparator(), parameterConverters);
     }
 
     public ExamplesTableData parseData(String tableAsString, String headerSeparator, String valueSeparator,
-            String ignorableSeparator) {
+            String ignorableSeparator, ParameterConverters parameterConverters) {
         Deque<ExamplesTableProperties> properties = new LinkedList<>();
         String tableWithoutProperties = tableAsString.trim();
         Matcher matcher = ExamplesTable.INLINED_PROPERTIES_PATTERN.matcher(tableWithoutProperties);
@@ -31,12 +32,12 @@ public class TableParsers {
             propertiesAsString = StringUtils.replace(propertiesAsString, "\\{", "{");
             propertiesAsString = StringUtils.replace(propertiesAsString, "\\}", "}");
             properties.add(new ExamplesTableProperties(propertiesAsString, headerSeparator,
-                    valueSeparator, ignorableSeparator));
+                    valueSeparator, ignorableSeparator, parameterConverters));
             tableWithoutProperties = matcher.group(2).trim();
             matcher = ExamplesTable.INLINED_PROPERTIES_PATTERN.matcher(tableWithoutProperties);
         }
         if (properties.isEmpty()) {
-            properties.add(new ExamplesTableProperties("", headerSeparator, valueSeparator, ignorableSeparator));
+            properties.add(new ExamplesTableProperties("", headerSeparator, valueSeparator, ignorableSeparator, parameterConverters));
         }
         return new ExamplesTableData(tableWithoutProperties, properties);
     }

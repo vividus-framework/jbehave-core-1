@@ -30,7 +30,6 @@ import org.jbehave.core.steps.Row;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.util.regex.Pattern.DOTALL;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * <p>
@@ -201,7 +200,7 @@ public class ExamplesTable {
         this.tableParsers = tableParsers;
         this.tableTransformers = tableTransformers;
         this.defaults = new ConvertedParameters(EMPTY_MAP, parameterConverters);
-        ExamplesTableData data = tableParsers.parseData(tableAsString, headerSeparator, valueSeparator, ignorableSeparator);
+        ExamplesTableData data = tableParsers.parseData(tableAsString, headerSeparator, valueSeparator, ignorableSeparator, parameterConverters);
         this.propertiesList.addAll(data.getProperties());
         String transformedTable = applyTransformers(data.getTable());
         parseByRows(transformedTable);
@@ -539,19 +538,28 @@ public class ExamplesTable {
 
         public ExamplesTableProperties(String propertiesAsString, String defaultHeaderSeparator, String defaultValueSeparator,
                 String defaultIgnorableSeparator) {
+            this(propertiesAsString, defaultHeaderSeparator, defaultValueSeparator, defaultIgnorableSeparator, null);
+        }
+
+        public ExamplesTableProperties(String propertiesAsString, String defaultHeaderSeparator, String defaultValueSeparator,
+                String defaultIgnorableSeparator, ParameterConverters parameterConverters) {
             properties.setProperty(HEADER_SEPARATOR_KEY, defaultHeaderSeparator);
             properties.setProperty(VALUE_SEPARATOR_KEY, defaultValueSeparator);
             properties.setProperty(IGNORABLE_SEPARATOR_KEY, defaultIgnorableSeparator);
-            properties.putAll(parseProperties(propertiesAsString));
+            properties.putAll(parseProperties(propertiesAsString, parameterConverters));
             this.propertiesAsString = propertiesAsString;
         }
 
-        private Map<String, String> parseProperties(String propertiesAsString) {
+        private Map<String, String> parseProperties(String propertiesAsString, ParameterConverters parameterConverters) {
             Map<String, String> result = new LinkedHashMap<>();
-            if (!isEmpty(propertiesAsString)) {
+            if (!StringUtils.isEmpty(propertiesAsString)) {
                 for (String propertyAsString : propertiesAsString.split("(?<!\\\\),")) {
                     String[] property = StringUtils.split(propertyAsString, "=", 2);
-                    result.put(property[0].trim(), StringUtils.replace(property[1], "\\,", ",").trim());
+                    String convertedValue = StringUtils.replace(property[1], "\\,", ",").trim();
+                    if (parameterConverters != null) {
+                        convertedValue = (String) parameterConverters.convert(convertedValue, String.class);
+                    }
+                    result.put(property[0].trim(), convertedValue);
                  }
             }
             return result;

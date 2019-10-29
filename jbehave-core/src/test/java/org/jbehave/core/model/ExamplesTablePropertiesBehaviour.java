@@ -1,7 +1,9 @@
 package org.jbehave.core.model;
 
 import org.jbehave.core.model.ExamplesTable.ExamplesTableProperties;
+import org.jbehave.core.steps.ParameterConverters;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Properties;
 
@@ -14,6 +16,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
  * @author Valery Yatsynovich
  */
 public class ExamplesTablePropertiesBehaviour {
+
+    private static final String KEY = "key";
+    private static final String VALUE = "value";
+    private static final String CONVERTED = "converted";
 
     @Test
     public void canGetCustomProperties() {
@@ -51,7 +57,7 @@ public class ExamplesTablePropertiesBehaviour {
     @Test
     public void canGetAllProperties() {
         Properties properties = new Properties();
-        properties.setProperty("key", "value");
+        properties.setProperty(KEY, VALUE);
         ExamplesTableProperties tableProperties = new ExamplesTableProperties(properties);
         assertThat(tableProperties.getProperties().containsKey("key"), is(true));
     }
@@ -70,5 +76,14 @@ public class ExamplesTablePropertiesBehaviour {
         assertThat(properties.getTransformer(), equalTo("CUSTOM_TRANSFORMER"));
         assertThat(properties.getProperties().getProperty("tables"),
                 equalTo("{transformer=CUSTOM_TRANSFORMER, parameter1=value1}"));
+    }
+
+    @Test
+    public void shouldApplyConvertersToValues() {
+        ParameterConverters converters = Mockito.mock(ParameterConverters.class);
+        Mockito.when(converters.convert(VALUE, String.class)).thenReturn(CONVERTED);
+        ExamplesTableProperties properties = new ExamplesTableProperties(KEY + "=" + VALUE, "|", "|", "|--",
+                converters);
+        assertThat(properties.getProperties().getProperty(KEY), equalTo(CONVERTED));
     }
 }

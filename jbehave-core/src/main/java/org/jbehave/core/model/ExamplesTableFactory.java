@@ -95,7 +95,7 @@ public class ExamplesTableFactory {
     }
 
     private ExamplesTableData getExamplesTableData(String input) {
-        return tableParsers.parseData(input, keywords);
+        return tableParsers.parseData(input, keywords, parameterConverters);
     }
 
     public void useKeywords(Keywords keywords){
