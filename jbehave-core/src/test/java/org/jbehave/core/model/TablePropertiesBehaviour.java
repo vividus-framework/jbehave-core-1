@@ -13,12 +13,16 @@ import org.jbehave.core.i18n.LocalizedKeywords;
 import org.jbehave.core.model.ExamplesTable.TableProperties;
 import org.jbehave.core.steps.ParameterConverters;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  * @author Valery Yatsynovich
  */
 class TablePropertiesBehaviour {
 
+    private static final String KEY = "key";
+    private static final String VALUE = "value";
+    private static final String KEY_VALUE = KEY + "=" + VALUE;
     private final Keywords keywords = new LocalizedKeywords();
 
     private TableProperties createTablePropertiesWithDefaultSeparators(String propertiesAsString) {
@@ -67,7 +71,7 @@ class TablePropertiesBehaviour {
     @Test
     void canSetPropertiesWithSpecialCharsInName() {
         TableProperties properties = createTablePropertiesWithDefaultSeparators("p.r:o*p$e|r;t#y=value");
-        assertThat(properties.getProperties().getProperty("p.r:o*p$e|r;t#y"), equalTo("value"));
+        assertThat(properties.getProperties().getProperty("p.r:o*p$e|r;t#y"), equalTo(VALUE));
     }
 
     @Test
@@ -90,8 +94,8 @@ class TablePropertiesBehaviour {
 
     @Test
     void canGetAllProperties() {
-        TableProperties tableProperties = new TableProperties("key=value", keywords, null);
-        assertThat(tableProperties.getProperties().containsKey("key"), is(true));
+        TableProperties tableProperties = new TableProperties(KEY_VALUE, keywords, null);
+        assertThat(tableProperties.getProperties().containsKey(KEY), is(true));
     }
 
     @Test
@@ -104,6 +108,15 @@ class TablePropertiesBehaviour {
         assertThat(properties.getTransformer(), equalTo("CUSTOM_TRANSFORMER"));
         assertThat(properties.getProperties().getProperty("tables"),
                 equalTo("{transformer=CUSTOM_TRANSFORMER, parameter1=value1}"));
+    }
+
+    @Test
+    void shouldApplyConvertersToValues() {
+        ParameterConverters converters = Mockito.mock(ParameterConverters.class);
+        String converted = "converted";
+        Mockito.when(converters.convert(VALUE, String.class)).thenReturn(converted);
+        TableProperties properties = new TableProperties(KEY_VALUE, keywords, converters);
+        assertThat(properties.getProperties().getProperty(KEY), equalTo(converted));
     }
 
     @Test
@@ -141,47 +154,47 @@ class TablePropertiesBehaviour {
     void cantGetMandatoryProperty() {
         TableProperties properties = new TableProperties("", keywords, null);
         IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> properties.getMandatoryNonBlankProperty("key", int.class));
+                () -> properties.getMandatoryNonBlankProperty(KEY, int.class));
         assertEquals("'key' is not set in ExamplesTable properties", thrown.getMessage());
     }
 
     @Test
     void canGetMandatoryIntProperty() {
         TableProperties properties = new TableProperties("key=1", keywords, new ParameterConverters());
-        int actual = properties.getMandatoryNonBlankProperty("key", int.class);
+        int actual = properties.getMandatoryNonBlankProperty(KEY, int.class);
         assertEquals(1, actual);
     }
 
     @Test
     void canGetMandatoryLongProperty() {
         TableProperties properties = new TableProperties("key=1", keywords, new ParameterConverters());
-        long actual = properties.getMandatoryNonBlankProperty("key", long.class);
+        long actual = properties.getMandatoryNonBlankProperty(KEY, long.class);
         assertEquals(1L, actual);
     }
 
     @Test
     void canGetMandatoryDoubleProperty() {
         TableProperties properties = new TableProperties("key=1", keywords, new ParameterConverters());
-        assertEquals(1d, properties.getMandatoryNonBlankProperty("key", double.class));
+        assertEquals(1d, properties.getMandatoryNonBlankProperty(KEY, double.class));
     }
 
     @Test
     void canGetMandatoryBooleanProperty() {
         TableProperties properties = new TableProperties("key=true", keywords, new ParameterConverters());
-        boolean value = properties.getMandatoryNonBlankProperty("key", boolean.class);
+        boolean value = properties.getMandatoryNonBlankProperty(KEY, boolean.class);
         assertTrue(value);
     }
 
     @Test
     void canGetMandatoryNonBlankProperty() {
         TableProperties properties = new TableProperties("key=string", keywords, new ParameterConverters());
-        assertEquals("string", properties.<String>getMandatoryNonBlankProperty("key", String.class));
+        assertEquals("string", properties.<String>getMandatoryNonBlankProperty(KEY, String.class));
     }
 
     @Test
     void canGetMandatoryEnumProperty() {
         TableProperties properties = new TableProperties("key=BLACK", keywords, new ParameterConverters());
-        assertEquals(TestEnum.BLACK, properties.getMandatoryNonBlankProperty("key", TestEnum.class));
+        assertEquals(TestEnum.BLACK, properties.getMandatoryNonBlankProperty(KEY, TestEnum.class));
     }
 
     private enum TestEnum {
