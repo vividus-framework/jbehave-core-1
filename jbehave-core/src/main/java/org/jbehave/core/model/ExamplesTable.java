@@ -452,6 +452,9 @@ public class ExamplesTable {
                     String[] property = StringUtils.split(propertyAsString, EQUAL, 2);
                     String propertyName = property[0];
                     String propertyValue = property[1];
+                    if (parameterConverters != null) {
+                        propertyValue = (String) parameterConverters.convert(propertyValue, String.class);
+                    }
                     Matcher decoratedPropertyMatcher = DECORATED_PROPERTY_PATTERN.matcher(propertyName);
                     if (decoratedPropertyMatcher.matches()) {
                         String[] propertyWithDecorators = decoratedPropertyMatcher.group(1).split(PIPE_REGEX);
