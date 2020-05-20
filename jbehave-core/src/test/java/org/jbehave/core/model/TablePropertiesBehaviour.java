@@ -1,5 +1,7 @@
 package org.jbehave.core.model;
 
+import org.jbehave.core.steps.ParameterConverters;
+import org.mockito.Mockito;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,6 +23,10 @@ import org.junit.jupiter.api.Test;
  * @author Valery Yatsynovich
  */
 class TablePropertiesBehaviour {
+
+    private static final String KEY = "key";
+    private static final String VALUE = "value";
+    private static final String CONVERTED = "converted";
 
     private TableProperties createTablePropertiesWithDefaultSeparators(String propertiesAsString) {
         return new TableProperties(null, propertiesAsString, "|", "|", "|--");
@@ -92,9 +98,9 @@ class TablePropertiesBehaviour {
     @Test
     void canGetAllProperties() {
         Properties properties = new Properties();
-        properties.setProperty("key", "value");
+        properties.setProperty(KEY, VALUE);
         TableProperties tableProperties = new TableProperties(null, properties);
-        assertThat(tableProperties.getProperties().containsKey("key"), is(true));
+        assertThat(tableProperties.getProperties().containsKey(KEY), is(true));
     }
 
     @Test
@@ -106,6 +112,16 @@ class TablePropertiesBehaviour {
         assertThat(properties.getTransformer(), equalTo("CUSTOM_TRANSFORMER"));
         assertThat(properties.getProperties().getProperty("tables"),
                 equalTo("{transformer=CUSTOM_TRANSFORMER, parameter1=value1}"));
+    }
+
+    @Test
+    void shouldApplyConvertersToValues() {
+        ParameterConverters converters = Mockito.mock(ParameterConverters.class);
+        Mockito.when(converters.convert(VALUE, String.class)).thenReturn(CONVERTED);
+        Properties props = new Properties();
+        props.put(KEY, VALUE);
+        TableProperties properties = new TableProperties(converters, KEY + "=" + VALUE, "|", "|", "|--");
+        assertThat(properties.getProperties().getProperty(KEY), equalTo(CONVERTED));
     }
 
     @Test
