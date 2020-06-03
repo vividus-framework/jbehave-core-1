@@ -42,7 +42,7 @@ public class StoryManager {
     private final Map<MetaFilter, List<Story>> excludedStories = new HashMap<>();
     private RunContext context;
     private StoryTimeouts timeouts;
-    
+
     public StoryManager(Configuration configuration,
             InjectableStepsFactory stepsFactory,
             EmbedderControls embedderControls, EmbedderMonitor embedderMonitor,
@@ -55,6 +55,10 @@ public class StoryManager {
         this.performableTree = performableTree;
         this.timeouts = new StoryTimeouts(embedderControls, embedderMonitor);
         this.timeouts.withParsers(parsers);
+    }
+
+	public RunContext getContext() {
+        return context;
     }
 
     public Story storyOfPath(String storyPath) {
