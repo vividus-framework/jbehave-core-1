@@ -21,11 +21,15 @@ public class TablePropertiesBehaviour {
     private static final String VALUE = "value";
     private static final String CONVERTED = "converted";
 
+    private TableProperties createTablePropertiesWithDefaultSeparators(String propertiesAsString) {
+        return new TableProperties(propertiesAsString, "|", "|", "|--");
+    }
+
     @Test
     public void canGetCustomProperties() {
-        TableProperties properties = new TableProperties("ignorableSeparator=!--,headerSeparator=!,valueSeparator=!,"
-                + "commentSeparator=#,trim=false,metaByRow=true,transformer=CUSTOM_TRANSFORMER", "|", "|",
-                "|--");
+        TableProperties properties = createTablePropertiesWithDefaultSeparators(
+                "ignorableSeparator=!--,headerSeparator=!,valueSeparator=!,"
+                        + "commentSeparator=#,trim=false,metaByRow=true,transformer=CUSTOM_TRANSFORMER");
         assertThat(properties.getRowSeparator(), equalTo("\n"));
         assertThat(properties.getHeaderSeparator(), equalTo("!"));
         assertThat(properties.getValueSeparator(), equalTo("!"));
@@ -38,14 +42,20 @@ public class TablePropertiesBehaviour {
 
     @Test
     public void canSetPropertiesWithBackwardSlash() {
-        TableProperties properties = new TableProperties("custom=\\", "|", "|", "|--");
+        TableProperties properties = createTablePropertiesWithDefaultSeparators("custom=\\");
         assertThat(properties.getProperties().getProperty("custom"), equalTo("\\"));
     }
 
     @Test
-    public void canSetPropertiesWithSpecialChars() {
-        TableProperties properties = new TableProperties("withSpecialChars=/:*$\\", "|", "|", "|--");
+    public void canSetPropertiesWithSpecialCharsInValues() {
+        TableProperties properties = createTablePropertiesWithDefaultSeparators("withSpecialChars=/:*$\\");
         assertThat(properties.getProperties().getProperty("withSpecialChars"), equalTo("/:*$\\"));
+    }
+
+    @Test
+    public void canSetPropertiesWithSpecialCharsInName() {
+        TableProperties properties = createTablePropertiesWithDefaultSeparators("p.r:o*p$e|r;t#y=value");
+        assertThat(properties.getProperties().getProperty("p.r:o*p$e|r;t#y"), equalTo("value"));
     }
 
     @Test
