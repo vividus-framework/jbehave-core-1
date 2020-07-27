@@ -476,17 +476,12 @@ public class ExamplesTable {
         private static final String EQUAL = "=";
         private static final String PIPE_REGEX = "\\|";
 
-        private static final String PROPERTY_NAME_REGEX = "[^=,\\s]+";
         private static final String DECORATORS_REGEX = Stream.of(Decorator.values())
                 .map(Decorator::name)
                 .collect(Collectors.joining("|", "(", ")"));
 
-        private static final String DECORATED_PROPERTY_REGEX =
-                "\\s*\\{(" + PROPERTY_NAME_REGEX + "(\\|" + DECORATORS_REGEX + ")*)}\\s*";
-        private static final Pattern DECORATED_PROPERTY_PATTERN = Pattern.compile(DECORATED_PROPERTY_REGEX, Pattern.CASE_INSENSITIVE);
-        private static final Pattern PROPERTIES_PATTERN = Pattern.compile("("
-                + DECORATED_PROPERTY_REGEX + "=(\\s*\\S+?(?=(?:,|$))|\\s*\\S+\\s*))|(\\s*" + PROPERTY_NAME_REGEX
-                + "\\s*=(\\s?)(\\W+(?=(?:,|$))|(?!\\{)[^,\\s]+|\\{.+}|\\{?\\S+|\\\\|\\s+)(\\s?))", Pattern.CASE_INSENSITIVE);
+        private static final Pattern DECORATED_PROPERTY_PATTERN = Pattern.compile(
+                "\\s*\\{([^=,\\s]+(\\|" + DECORATORS_REGEX + ")*)}\\s*", Pattern.CASE_INSENSITIVE);
 
         private static final String HEADER_SEPARATOR = "|";
         private static final String VALUE_SEPARATOR = "|";
@@ -545,7 +540,7 @@ public class ExamplesTable {
         private Map<String, String> parseProperties(String propertiesAsString, ParameterConverters parameterConverters) {
             Map<String, String> result = new LinkedHashMap<>();
             if (!StringUtils.isEmpty(propertiesAsString)) {
-                for (String propertyAsString : splitProperties(propertiesAsString)) {
+                for (String propertyAsString : propertiesAsString.split("(?<!\\\\),")) {
                     String[] property = StringUtils.split(propertyAsString, EQUAL, 2);
                     String propertyName = property[0];
                     String propertyValue = property[1];
@@ -567,15 +562,6 @@ public class ExamplesTable {
                  }
             }
             return result;
-        }
-
-        private List<String> splitProperties(String propertiesAsString) {
-            List<String> properties = new ArrayList<>();
-            Matcher matcher = PROPERTIES_PATTERN.matcher(propertiesAsString);
-            while (matcher.find()) {
-                properties.add(matcher.group(0));
-            }
-            return properties;
         }
 
         private String decoratePropertyValue(String value, Decorator decorator) {
