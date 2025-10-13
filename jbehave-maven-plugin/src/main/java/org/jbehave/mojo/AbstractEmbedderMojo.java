@@ -24,6 +24,7 @@ import org.jbehave.core.embedder.executors.ExecutorServiceFactory;
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.io.StoryFinder;
 import org.jbehave.core.model.Meta;
+import org.jbehave.core.model.RunDuration;
 import org.jbehave.core.model.Scenario;
 import org.jbehave.core.model.Story;
 import org.jbehave.core.model.StoryDuration;
@@ -481,6 +482,13 @@ public abstract class AbstractEmbedderMojo extends AbstractMojo {
         }
 
         @Override
+        public void runTimeout(RunDuration runDuration, long storyDuration) {
+            getLog().warn(
+                    "Run duration of " + runDuration.getTotalDurationInSecs() + storyDuration
+                            + " seconds has exceeded timeout of " + runDuration.getTimeoutInSecs() + " seconds");
+        }
+
+        @Override
         public void storyTimeout(Story story, StoryDuration storyDuration) {
             getLog().warn(
                     "Story " + story.getPath() + " duration of " + storyDuration.getDurationInSecs()
@@ -505,6 +513,11 @@ public abstract class AbstractEmbedderMojo extends AbstractMojo {
         @Override
         public void usingTimeout(String path, long timeout) {
             getLog().info("Using timeout for story " + path + " of " + timeout + " secs.");
+        }
+
+        @Override
+        public void usingRunTimeout(long timeout) {
+            getLog().info("Using run timeout of " + timeout + " secs.");
         }
 
         @Override

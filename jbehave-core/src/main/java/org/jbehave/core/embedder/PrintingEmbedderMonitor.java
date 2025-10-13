@@ -10,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jbehave.core.ConfigurableEmbedder;
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.model.Meta;
+import org.jbehave.core.model.RunDuration;
 import org.jbehave.core.model.Scenario;
 import org.jbehave.core.model.Story;
 import org.jbehave.core.model.StoryDuration;
@@ -163,6 +164,12 @@ public abstract class PrintingEmbedderMonitor implements EmbedderMonitor {
     }
 
     @Override
+    public void runTimeout(RunDuration runDuration, long storyDuration) {
+        print("Run duration of %d seconds has exceeded timeout of %d seconds",
+                runDuration.getTotalDurationInSecs() + storyDuration, runDuration.getTimeoutInSecs());
+    }
+
+    @Override
     public void storyTimeout(Story story, StoryDuration storyDuration) {
         print("Story %s duration of %d seconds has exceeded timeout of %d seconds", story.getPath(),
                 storyDuration.getDurationInSecs(), storyDuration.getTimeoutInSecs());
@@ -186,6 +193,11 @@ public abstract class PrintingEmbedderMonitor implements EmbedderMonitor {
     @Override
     public void usingTimeout(String path, long timeout) {
         print("Using timeout for story %s of %d secs.", path, timeout);
+    }
+
+    @Override
+    public void usingRunTimeout(long timeout) {
+        print("Using run timeout of %d secs.", timeout);
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.model.Meta;
+import org.jbehave.core.model.RunDuration;
 import org.jbehave.core.model.Scenario;
 import org.jbehave.core.model.Story;
 import org.jbehave.core.model.StoryDuration;
@@ -143,6 +144,11 @@ public class NullEmbedderMonitor implements EmbedderMonitor {
     }
 
     @Override
+    public void runTimeout(RunDuration runDuration, long storyDuration) {
+        // Do nothing by default
+    }
+
+    @Override
     public void storyTimeout(Story story, StoryDuration storyDuration) {
         // Do nothing by default
     }
@@ -164,6 +170,11 @@ public class NullEmbedderMonitor implements EmbedderMonitor {
 
     @Override
     public void usingTimeout(String path, long timeout) {
+        // Do nothing by default
+    }
+
+    @Override
+    public void usingRunTimeout(long timeout) {
         // Do nothing by default
     }
 }

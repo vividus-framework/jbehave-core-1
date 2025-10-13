@@ -16,8 +16,10 @@ public class EmbedderControls {
     private boolean verboseFailures = false;
     private boolean verboseFiltering = false;
     private String storyTimeouts = "300";
+    private String runTimeout = "3000";
     private int threads = 1;
     private boolean failOnStoryTimeout = false;
+    private boolean failOnRunTimeout = false;
 
     public EmbedderControls() {
     }
@@ -54,8 +56,16 @@ public class EmbedderControls {
         return storyTimeouts;
     }
 
+    public String runTimeout() {
+        return runTimeout;
+    }
+
     public boolean failOnStoryTimeout() {
         return failOnStoryTimeout;
+    }
+
+    public boolean failOnRunTimeout() {
+        return failOnRunTimeout;
     }
 
     public int threads() {
@@ -102,8 +112,18 @@ public class EmbedderControls {
         return this;
     }
 
+    public EmbedderControls useRunTimeout(String runTimeout) {
+        this.runTimeout = runTimeout;
+        return this;
+    }
+
     public EmbedderControls doFailOnStoryTimeout(boolean failOnStoryTimeout) {
         this.failOnStoryTimeout = failOnStoryTimeout;
+        return this;
+    }
+
+    public EmbedderControls doFailOnRunTimeout(boolean failOnRunTimeout) {
+        this.failOnRunTimeout = failOnRunTimeout;
         return this;
     }
 
