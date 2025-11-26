@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.model.Meta;
+import org.jbehave.core.model.RunDuration;
 import org.jbehave.core.model.Scenario;
 import org.jbehave.core.model.Story;
 import org.jbehave.core.model.StoryDuration;
@@ -65,6 +66,8 @@ public interface EmbedderMonitor {
 
     void systemPropertySet(String name, String value);
 
+    void runTimeout(RunDuration runDuration, long storyDuration);
+
     void storyTimeout(Story story, StoryDuration storyDuration);
 
     void usingThreads(int threads);
@@ -75,4 +78,5 @@ public interface EmbedderMonitor {
     
     void usingTimeout(String path, long timeout);
 
+    void usingRunTimeout(long timeout);
 }

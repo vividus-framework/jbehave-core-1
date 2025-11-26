@@ -20,6 +20,7 @@ import org.jbehave.core.embedder.PerformableTree.PerformableRoot;
 import org.jbehave.core.embedder.PerformableTree.RunContext;
 import org.jbehave.core.embedder.StoryTimeouts.TimeoutParser;
 import org.jbehave.core.failures.BatchFailures;
+import org.jbehave.core.model.RunDuration;
 import org.jbehave.core.model.Story;
 import org.jbehave.core.model.StoryDuration;
 import org.jbehave.core.steps.InjectableStepsFactory;
@@ -42,6 +43,7 @@ public class StoryManager {
     private final Map<MetaFilter, List<Story>> excludedStories = new HashMap<>();
     private RunContext context;
     private StoryTimeouts timeouts;
+    private RunDuration runDuration;
     
     public StoryManager(Configuration configuration,
             InjectableStepsFactory stepsFactory,
@@ -169,6 +171,10 @@ public class StoryManager {
         }
         boolean allDone = false;
         boolean started = false;
+
+        runDuration = new RunDuration(Long.parseLong(embedderControls.runTimeout()));
+        this.embedderMonitor.usingRunTimeout(runDuration.getTimeoutInSecs());
+
         while (!allDone || !started) {
             allDone = true;
             for (RunningStory runningStory : runningStories.values()) {
@@ -180,6 +186,7 @@ public class StoryManager {
                         allDone = false;
                         StoryDuration duration = runningStory.getDuration();
                         runningStory.updateDuration();
+                        long storyDuration = runningStory.getDuration().getDurationInSecs();
                         if (context.isCancelled(story)) {
                             if (duration.cancelTimedOut()) {
                                 future.cancel(true);
@@ -190,12 +197,20 @@ public class StoryManager {
                             embedderMonitor.storyTimeout(story, duration);
                             context.cancelStory(story, duration);
                             if (embedderControls.failOnStoryTimeout()) {
-                                throw new StoryExecutionFailed(story.getPath(),
-                                        new StoryTimedOut(duration));
+                                throw new StoryExecutionFailed(story.getPath(), new StoryTimedOut(duration));
+                            }
+                            continue;
+                        }
+                        if (runDuration.timedOut(storyDuration)) {
+                            embedderMonitor.runTimeout(runDuration, storyDuration);
+                            context.cancelStory(story, duration);
+                            if (embedderControls.failOnRunTimeout()) {
+                                throw new StoryExecutionFailed(story.getPath(), new RunTimedOut(duration));
                             }
                             continue;
                         }
                     } else {
+                        runDuration.updateTotalDurationInSecs(runningStory.getDuration().getDurationInSecs());
                         try {
                             ThrowableStory throwableStory = future.get();
                             Throwable throwable = throwableStory.getThrowable();
@@ -339,6 +354,16 @@ public class StoryManager {
         public StoryTimedOut(StoryDuration storyDuration) {
             super(storyDuration.getDurationInSecs() + "s > "
                     + storyDuration.getTimeoutInSecs() + "s");
+        }
+
+    }
+
+    @SuppressWarnings("serial")
+    public static class RunTimedOut extends RuntimeException {
+
+        public RunTimedOut(StoryDuration runDuration) {
+            super(runDuration.getDurationInSecs() + "s > "
+                    + runDuration.getTimeoutInSecs() + "s");
         }
 
     }

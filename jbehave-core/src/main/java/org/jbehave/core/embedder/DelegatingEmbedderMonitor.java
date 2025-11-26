@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.jbehave.core.failures.BatchFailures;
 import org.jbehave.core.model.Meta;
+import org.jbehave.core.model.RunDuration;
 import org.jbehave.core.model.Scenario;
 import org.jbehave.core.model.Story;
 import org.jbehave.core.model.StoryDuration;
@@ -164,6 +165,11 @@ public class DelegatingEmbedderMonitor implements EmbedderMonitor {
     }
 
     @Override
+    public void runTimeout(RunDuration runDuration, long storyDuration) {
+        delegates.forEach(d -> d.runTimeout(runDuration, storyDuration));
+    }
+
+    @Override
     public void storyTimeout(Story story, StoryDuration storyDuration) {
         delegates.forEach(d -> d.storyTimeout(story, storyDuration));
     }
@@ -186,5 +192,10 @@ public class DelegatingEmbedderMonitor implements EmbedderMonitor {
     @Override
     public void usingTimeout(String path, long timeout) {
         delegates.forEach(d -> d.usingTimeout(path, timeout));
+    }
+
+    @Override
+    public void usingRunTimeout(long timeout) {
+        delegates.forEach(d -> d.usingRunTimeout(timeout));
     }
 }
